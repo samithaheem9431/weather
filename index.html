@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Weather</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #80deea);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .weather-container {
+            max-width: 400px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .weather-container:hover {
+            transform: translateY(-5px);
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #00796b;
+        }
+        .temperature {
+            font-size: 56px;
+            margin: 10px 0;
+            color: #f57c00;
+        }
+        .condition {
+            font-size: 24px;
+            color: #555;
+        }
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 10px 0;
+        }
+        .details {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #777;
+        }
+        .loading {
+            font-size: 18px;
+            color: #00796b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="weather-container">
+        <h1>Current Weather</h1>
+        <div class="loading" id="loading">Loading...</div>
+        <div id="weatherInfo" style="display: none;">
+            <div class="temperature" id="temperature"></div>
+            <div class="condition" id="condition"></div>
+            <img id="icon" class="icon" alt="Weather Icon">
+            <div class="details" id="details"></div>
+        </div>
+    </div>
+
+    <script>
+        const url = 'https://weatherapi-com.p.rapidapi.com/current.json?q=31.5204%2C74.3587';
+        const options = {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-key': '1b7af6ee63msh8416871a8b9a27ep10bbe6jsn70e3a4bed1ba',
+                'x-rapidapi-host': 'weatherapi-com.p.rapidapi.com'
+            }
+        };
+
+        async function fetchWeather() {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                displayWeather(data);
+            } catch (error) {
+                console.error('Error fetching the weather data:', error);
+                document.getElementById('loading').textContent = 'Error loading weather data.';
+            }
+        }
+
+        function displayWeather(data) {
+            const temperature = data.current.temp_c;
+            const conditionText = data.current.condition.text;
+            const iconUrl = `https:${data.current.condition.icon}`;
+            const details = `Humidity: ${data.current.humidity}% | Wind: ${data.current.wind_kph} kph | Local Time: ${data.location.localtime}`;
+
+            document.getElementById('temperature').textContent = `${temperature}°C`;
+            document.getElementById('condition').textContent = conditionText;
+            document.getElementById('icon').src = iconUrl;
+            document.getElementById('details').textContent = details;
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('weatherInfo').style.display = 'block';
+        }
+
+        fetchWeather();
+    </script>
+
+</body>
+</html>
